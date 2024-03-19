@@ -46,12 +46,17 @@ class MenuBar:
         self.settingsMenu = tk.Menu(self.menu, tearoff=0)
         self.settingsMenu.add_command(label="Show settings", command = self.show_settings)
 
+        self.clearMenu = tk.Menu(self.menu, tearoff=0)
+        self.clearMenu.add_command(label="clear image", command = self.clear_image)
 
         self.menu.add_cascade(label="File", menu=self.fileMenu)
         self.menu.add_cascade(label="Results", menu=self.resultsMenu)
         self.menu.add_cascade(label="Settings", menu=self.settingsMenu)
+        self.menu.add_cascade(label="Clear image", menu=self.clearMenu)
 
-        
+    def clear_image(self):
+        WA.wins[self.win_num].canvas.clear_image()
+
     def exitProgram(self):
         self.parent.destroy()
         

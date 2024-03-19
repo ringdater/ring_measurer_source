@@ -49,18 +49,26 @@ class AI_analysis:
         self.model_selectbox.grid(row=2, column = 0, pady = 5, padx = 5)
         # Call get_models to initially populate the ComboBox
         
+        self.ai_series_output = customtkinter.CTkComboBox(self.classframe,
+                                                         values=["series_1",
+                                                                 "series_2",
+                                                                 "series_3"],
+                                                         command= self.ai_series_select)
+        self.ai_series_output.grid(row=3, column = 0, pady = 5, padx = 5)
+        
+        
         
         # close box
         self.close_btn = customtkinter.CTkButton(self.classframe, text = "Load growth axis",
                                                      command = self.load_Axis,
                                                      width=50)
-        self.close_btn.grid(row = 3, column = 0, pady = self.btn_y, padx = self.btn_x, sticky=tk.EW)
+        self.close_btn.grid(row = 4, column = 0, pady = self.btn_y, padx = self.btn_x, sticky=tk.EW)
         
         # # close box
         self.draw_btn = customtkinter.CTkButton(self.classframe, text = "Save drawn axis",
                                                       command = self.save_draw_Axis,
                                                       width=50)
-        self.draw_btn.grid(row = 3, column = 0, pady = self.btn_y, padx = self.btn_x, sticky=tk.EW)
+        self.draw_btn.grid(row = 5, column = 0, pady = self.btn_y, padx = self.btn_x, sticky=tk.EW)
         
         
         
@@ -68,14 +76,23 @@ class AI_analysis:
         self.close_btn = customtkinter.CTkButton(self.classframe, text = "Run Model",
                                                      command = self.run_ai_model,
                                                      width=50)
-        self.close_btn.grid(row = 5, column = 0, pady = self.btn_y, padx = self.btn_x, sticky=tk.EW)
+        self.close_btn.grid(row = 6, column = 0, pady = self.btn_y, padx = self.btn_x, sticky=tk.EW)
         
+        
+        
+        # clear growth axis
+        self.erase_line = customtkinter.CTkButton(self.classframe, text = "Erase growth line",
+                                                      command = self.erase_line,
+                                                      width=50)
+        self.erase_line.grid(row = 7, column = 0, pady = self.btn_y, padx = self.btn_x, sticky=tk.EW)
+       
+    
         
         # close box
         self.close_btn = customtkinter.CTkButton(self.classframe, text = "Close window",
                                                      command = self.toggle,
                                                      width=50)
-        self.close_btn.grid(row = 6, column = 0, pady = self.btn_y, padx = self.btn_x, sticky=tk.EW)
+        self.close_btn.grid(row = 8, column = 0, pady = self.btn_y, padx = self.btn_x, sticky=tk.EW)
        
     
     def get_models(self):        
@@ -111,6 +128,20 @@ class AI_analysis:
         self.axis_filename = analyse_axis(points, self.filename)
         print(self.axis_filename)
     
+    def erase_line(self):
+        
+        points = []
+        for i in range(len(WA.wins[self.WN].canvas.IDT.object_list)):          
+            
+            if WA.wins[self.WN].canvas.IDT.object_list[i].type == "ai_point":
+                WA.wins[self.WN].canvas.canvas.delete(WA.wins[self.WN].canvas.IDT.object_list[i].object)
+                points.append(i)
+                #WA.wins[self.WN].canvas.remove_from_Series(i)
+
+        WA.wins[self.WN].canvas.IDT.object_list = [data for i, data in enumerate(WA.wins[self.WN].canvas.IDT.object_list) if i not in points]   
+        WA.wins[self.WN].canvas.draw_growth_line()
+    
+    
     def load_Axis(self):
         self.axis_filename = filedialog.askopenfilename(initialdir = os.getcwd() + "/images",
                                             title = "Select a File") 
@@ -129,9 +160,12 @@ class AI_analysis:
         
         self.AI_data = run_model(self.filename, self.axis_filename, model_choice)
         
-        WA.wins[self.WN].canvas.show_AI_data(self.AI_data)
+        WA.wins[self.WN].canvas.show_AI_data(self.AI_data, self.ai_series_output.get())
         
     def model_select(self, event):
+        pass
+    
+    def ai_series_select(self, event):
         pass
     
     def show(self):

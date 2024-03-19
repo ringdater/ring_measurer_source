@@ -19,7 +19,7 @@ Source code for the Ring Measurer App are available at:
 
 #############################################################################
 Citation information:
-    REynolds, D.J, De Ath, G., Everson, R., The application of machine 
+    Reynolds, D.J, De Ath, G., Everson, R., The application of machine 
     learning in growth ring identification and analysis. In prep.
     
 #############################################################################
@@ -83,6 +83,9 @@ class MainWindow(ttk.Frame):
             sample_id = os.path.splitext(full_name)[0]
             WA.wins.append(img_win(self.master, filename, len(WA.wins), sample_id))
             summary_thumbnails(self.bodyframe, sample_id, filename, len(WA.wins))
+            
+            WA.wins[len(WA.wins)-1].canvas.canvas.focus_set() 
+            
         else:
             return
 

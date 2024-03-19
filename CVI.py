@@ -311,6 +311,7 @@ class CanvasImage:
 
     def __wheel(self, event):
         """ Zoom with mouse wheel """
+        self.canvas.focus_set() 
         
         x = self.canvas.canvasx(event.x)  # get coordinates of the event on the canvas
         y = self.canvas.canvasy(event.y)
@@ -417,7 +418,9 @@ class CanvasImage:
             self.IDT.INSERT_SERIES.append(self.IDT.object_list[len(self.IDT.object_list) - 1])    
         
 
-    def CVI_clicked(self, event):        
+    def CVI_clicked(self, event):   
+        self.canvas.focus_set() 
+        
         if  self.IDT.MODE == "measure":
             if  self.IDT.ACT_SER == "series_1":
                 self.IDT.ACT_COLOR = self.IDT.ser_1_col
@@ -1961,7 +1964,7 @@ class CanvasImage:
             self.IDT.SERIES_1.append(self.IDT.object_list[N])
             
     # this function shows the analysis of the AI run in the app        
-    def show_AI_data(self, data):
+    def show_AI_data(self, data, series):
         for i in range(len(data)-1):
             #print(data[i][0])
             p1 = self.convert_to_canvas(data[i][1], data[i][0])
@@ -1974,11 +1977,19 @@ class CanvasImage:
             self.IDT.object_list.append(canvas_object(p1[0], p1[1],
                                                 p2[0], p2[1],
                                                 "measure", 
-                                                "series_1",
+                                                series,
                                                 i        
                                                 ))
             
             N = len(self.IDT.object_list)-1
+            
+            if series == "series_1":
+                sel_col = self.IDT.ser_1_col
+            elif series == "series_2":
+                sel_col = self.IDT.ser_2_col
+            elif series == "series_3":
+                sel_col = self.IDT.ser_3_col
+                        
             
             self.IDT.object_list[N].object = None
             self.IDT.object_list[N].type = "line"
@@ -1989,7 +2000,7 @@ class CanvasImage:
             self.IDT.object_list[N].label_text =  i 
             self.IDT.object_list[N].year = i    
             self.IDT.object_list[N].dated =  False
-            self.IDT.object_list[N].col =  self.IDT.ser_1_col
+            self.IDT.object_list[N].col =  sel_col
             
             # self.IDT.object_list[N].p1 = tmp1["p"]
             # self.IDT.object_list[N].p2 = tmp2["p"]
@@ -2007,9 +2018,32 @@ class CanvasImage:
                                                                     text = self.IDT.object_list[N].label_text, 
                                                                     fill = "black", 
                                                                     font = ('Helvetica 15 bold'))
+            if series == "series_1":
+                self.IDT.SERIES_1.append(self.IDT.object_list[N])
+            elif series == "series_2":
+                self.IDT.SERIES_2.append(self.IDT.object_list[N])
+            elif series == "series_3":
+                self.IDT.SERIES_3.append(self.IDT.object_list[N])
+             
+    def clear_image(self):
+        
+        clear = messagebox.askokcancel("Clear", "Are you sure you want to \nearse data from image?")
+        if clear:             
+            #erase the objects from the canvas
+            for i in range(len(self.IDT.object_list)):            
+                self.canvas.delete(self.IDT.object_list[i].object)
+                self.canvas.delete(self.IDT.object_list[i].label)
+                
+            for i in range(len(self.IDT.GROWTH_LINE)):
+                self.canvas.delete(self.IDT.GROWTH_LINE[i])    
             
-            self.IDT.SERIES_1.append(self.IDT.object_list[N])
-            
+            # then clear out the arrays that store the data
+            self.IDT.object_list = []        
+            self.IDT.SERIES_1 = []
+            self.IDT.SERIES_2 = []
+            self.IDT.SERIES_3 = []
+            self.IDT.GROWTH_LINE = []
+    
     # def CVI_analyse_axis(self):
     #     #print("running")
     #     if self.IDT.model == "Select a model":
